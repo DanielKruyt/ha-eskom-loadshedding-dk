@@ -69,7 +69,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     def provide_all_local_events_to_service(call: ServiceCall):
         local_events_data = coordinator.data.get("area_information", {}).get("events", {})
-        hass.service.async_call(domain: call.service_domain, service: call.service_name, service_data: local_events_data)
+        hass.service.async_call(call.service_domain, call.service_name, service_data: local_events_data)
 
     hass.services.async_register(DOMAIN, PROVIDE_ALL_LOCAL_EVENTS_TO_SERVICE, provide_all_local_events_to_service) 
 
