@@ -21,7 +21,8 @@ from .const import (
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,
-    PROVIDE_ALL_LOCAL_EVENTS_TO_SERVICE
+    PROVIDE_ALL_LOCAL_EVENTS_TO_SERVICE,
+    PROVIDE_ALL_LOCAL_SCHEDULE_TO_SERVICE
 )
 from .eskom_interface import EskomInterface
 
@@ -67,11 +68,23 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if not entry.update_listeners:
         entry.add_update_listener(async_reload_entry)
 
-    def provide_all_local_events_to_service(call: ServiceCall):
-        local_events_data = coordinator.data.get("area_information", {}).get("events", {})
-        hass.service.async_call(domain=call.service_domain, service=call.service_name, service_data=local_events_data)
+    # Registration of service(s):
 
-    hass.services.async_register(DOMAIN, PROVIDE_ALL_LOCAL_EVENTS_TO_SERVICE, provide_all_local_events_to_service) 
+    def provide_all_local_events_to_service(call: ServiceCall):
+        params = dict(call.data)
+        _LOGGER.info(params)
+        local_events_data = {"local_events": coordinator.data.get("area_information", {}).get("events", {})}
+        hass.services.call(domain=params["service_domain"], service=params["service_name"], service_data=local_events_data)
+
+    hass.services.async_register(DOMAIN, PROVIDE_ALL_LOCAL_EVENTS_TO_SERVICE, provide_all_local_events_to_service)
+
+    def provide_all_local_schedule_to_service(call: ServiceCall):
+        params = dict(call.data)
+        _LOGGER.info(params)
+        local_schedule_data = {"local_schedule": coordinator.data.get("area_information", {}).get("schedule", {})}
+        hass.services.call(domain=params["service_domain"], service=params["service_name"], service_data=local_schedule_data)
+
+    hass.services.async_register(DOMAIN, PROVIDE_ALL_LOCAL_SCHEDULE_TO_SERVICE, provide_all_local_schedule_to_service)
 
     return True
 

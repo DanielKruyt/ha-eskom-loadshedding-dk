@@ -94,14 +94,10 @@ class LoadsheddingLocalEventCalendar(EskomEntity, CalendarEntity):
 
         super()._handle_coordinator_update()
 
-    async def async_get_events(
-        self,
-        hass,
-        start_date: datetime,
-        end_date: datetime,
-    ) -> list[CalendarEvent]:
+    @staticmethod
+    async def static_get_events(coordinator):
         # Create calendar events from loadshedding events
-        events = self.coordinator.data.get("area_information", {}).get("events", {})
+        events = coordinator.data.get("area_information", {}).get("events", {})
         if events:
             time_format = "%Y-%m-%dT%H:%M:%S%z"
             return [
@@ -114,6 +110,14 @@ class LoadsheddingLocalEventCalendar(EskomEntity, CalendarEntity):
             ]
         else:
             return []
+
+    async def async_get_events(
+        self,
+        hass,
+        start_date: datetime,
+        end_date: datetime,
+    ) -> list[CalendarEvent]:
+        return await LoadsheddingLocalEventCalendar.static_get_events(self.coordinator)
 
     async def async_update(self) -> None:
         """Disable update behavior.
@@ -177,14 +181,10 @@ class LoadsheddingLocalScheduleCalendar(EskomEntity, CalendarEntity):
 
         super()._handle_coordinator_update()
 
-    async def async_get_events(
-        self,
-        hass,
-        start_date: datetime,
-        end_date: datetime,
-    ) -> list[CalendarEvent]:
+    @staticmethod
+    async def static_get_events(coordinator):
         # Create calendar events from the loadshedding schedule
-        schedule = self.coordinator.data.get("area_information", {}).get("schedule", {})
+        schedule = coordinator.data.get("area_information", {}).get("schedule", {})
         if schedule:
             # Iterate over each day in the schedule and create calender events for each slot
             time_format = "%Y-%m-%dT%H:%M%z"
@@ -217,6 +217,14 @@ class LoadsheddingLocalScheduleCalendar(EskomEntity, CalendarEntity):
             return calendar_events
         else:
             return []
+        
+    async def async_get_events(
+        self,
+        hass,
+        start_date: datetime,
+        end_date: datetime,
+    ) -> list[CalendarEvent]:
+        return await LoadsheddingLocalScheduleCalendar.static_get_events(self.coordinator)
 
     async def async_update(self) -> None:
         """Disable update behavior.

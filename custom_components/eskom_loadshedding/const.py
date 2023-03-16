@@ -48,6 +48,7 @@ QUOTA_NAME = "API Quota"
 
 # Service Names
 PROVIDE_ALL_LOCAL_EVENTS_TO_SERVICE = "provide_all_local_events_to_service"
+PROVIDE_ALL_LOCAL_SCHEDULE_TO_SERVICE = "provide_all_local_schedule_to_service"
 
 # API
 BASE_API_URL = "https://developer.sepush.co.za/business/2.0"
