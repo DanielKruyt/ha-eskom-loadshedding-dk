@@ -9,7 +9,7 @@ from datetime import timedelta
 import logging
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import Config, HomeAssistant
+from homeassistant.core import Config, HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -21,6 +21,7 @@ from .const import (
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,
+    PROVIDE_ALL_LOCAL_EVENTS_TO_SERVICE
 )
 from .eskom_interface import EskomInterface
 
@@ -65,6 +66,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     if not entry.update_listeners:
         entry.add_update_listener(async_reload_entry)
+
+    def provide_all_local_events_to_service(call: ServiceCall):
+        _LOGGER.info("{}".format(call))
+
+    hass.services.async_register(DOMAIN, PROVIDE_ALL_LOCAL_EVENTS_TO_SERVICE, provide_all_local_events_to_service) 
 
     return True
 
