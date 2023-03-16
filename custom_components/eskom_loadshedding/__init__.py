@@ -68,7 +68,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         entry.add_update_listener(async_reload_entry)
 
     def provide_all_local_events_to_service(call: ServiceCall):
-        _LOGGER.critical("{}".format(call))
+        local_events_data = coordinator.data.get("area_information", {}).get("events", {})
+        hass.service.async_call(domain: call.service_domain, service: call.service_name, service_data: local_events_data)
 
     hass.services.async_register(DOMAIN, PROVIDE_ALL_LOCAL_EVENTS_TO_SERVICE, provide_all_local_events_to_service) 
 
