@@ -95,7 +95,7 @@ class LoadsheddingLocalEventCalendar(EskomEntity, CalendarEntity):
         super()._handle_coordinator_update()
 
     @staticmethod
-    async def static_get_events(coordinator):
+    def static_get_events(coordinator):
         # Create calendar events from loadshedding events
         events = coordinator.data.get("area_information", {}).get("events", {})
         if events:
@@ -117,7 +117,7 @@ class LoadsheddingLocalEventCalendar(EskomEntity, CalendarEntity):
         start_date: datetime,
         end_date: datetime,
     ) -> list[CalendarEvent]:
-        return await LoadsheddingLocalEventCalendar.static_get_events(self.coordinator)
+        return LoadsheddingLocalEventCalendar.static_get_events(self.coordinator)
 
     async def async_update(self) -> None:
         """Disable update behavior.
@@ -182,7 +182,7 @@ class LoadsheddingLocalScheduleCalendar(EskomEntity, CalendarEntity):
         super()._handle_coordinator_update()
 
     @staticmethod
-    async def static_get_events(coordinator):
+    def static_get_events(coordinator):
         # Create calendar events from the loadshedding schedule
         schedule = coordinator.data.get("area_information", {}).get("schedule", {})
         if schedule:
@@ -224,7 +224,7 @@ class LoadsheddingLocalScheduleCalendar(EskomEntity, CalendarEntity):
         start_date: datetime,
         end_date: datetime,
     ) -> list[CalendarEvent]:
-        return await LoadsheddingLocalScheduleCalendar.static_get_events(self.coordinator)
+        return LoadsheddingLocalScheduleCalendar.static_get_events(self.coordinator)
 
     async def async_update(self) -> None:
         """Disable update behavior.

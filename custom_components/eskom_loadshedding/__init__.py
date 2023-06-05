@@ -14,6 +14,10 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
+from .calendar import (
+    LoadsheddingLocalEventCalendar,
+    LoadsheddingLocalScheduleCalendar
+)
 from .const import (
     CONF_SCAN_PERIOD,
     CONF_API_KEY,
@@ -73,16 +77,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     def provide_all_local_events_to_service(call: ServiceCall):
         params = dict(call.data)
         _LOGGER.info(params)
-        local_events_data = {"local_events": coordinator.data.get("area_information", {}).get("events", {})}
-        hass.services.call(domain=params["service_domain"], service=params["service_name"], service_data=local_events_data)
+        local_events_data = LoadsheddingLocalEventCalendar.static_get_events(coordinator)
+        hass.services.call(domain=params["service_domain"], service=params["service_name"], service_data={"events": local_events_data})
 
     hass.services.async_register(DOMAIN, PROVIDE_ALL_LOCAL_EVENTS_TO_SERVICE, provide_all_local_events_to_service)
 
     def provide_all_local_schedule_to_service(call: ServiceCall):
         params = dict(call.data)
-        _LOGGER.info(params)
-        local_schedule_data = {"local_schedule": coordinator.data.get("area_information", {}).get("schedule", {})}
-        hass.services.call(domain=params["service_domain"], service=params["service_name"], service_data=local_schedule_data)
+        _LOGGER.debug(params)
+        local_schedule_data = LoadsheddingLocalScheduleCalendar.static_get_events(coordinator)
+        _LOGGER.debug(local_schedule_data)
+        hass.services.call(domain=params["service_domain"], service=params["service_name"], service_data={"events": local_schedule_data})
 
     hass.services.async_register(DOMAIN, PROVIDE_ALL_LOCAL_SCHEDULE_TO_SERVICE, provide_all_local_schedule_to_service)
 
